@@ -1,7 +1,8 @@
-/**
- * Wowza Streaming Engine Software and all components Copyright 2006 - 2015, Wowza Media Systems, LLC, licensed pursuant to the Wowza Media Software End User License Agreement.
+/*
+ * This code and all components (c) Copyright 2006 - 2016, Wowza Media Systems, LLC. All rights reserved.
+ * This code is licensed pursuant to the Wowza Public License version 1.0, available at www.wowza.com/legal.
  */
-package com.wowza.wms.plugin.wowzaban;
+package com.wowza.wms.plugin.blacklist;
 
 import com.wowza.util.StringUtils;
 import com.wowza.wms.amf.AMFDataList;
@@ -35,7 +36,7 @@ import com.wowza.wms.vhost.IVHost;
 import com.wowza.wms.vhost.IVHostNotify;
 import com.wowza.wms.vhost.VHostSingleton;
 
-public class ServerListenerBanStreams extends ModuleBase implements IServerNotify2
+public class ServerListenerBlacklistStreams extends ModuleBase implements IServerNotify2
 { 
 	private class VHostNotifier implements IVHostNotify
 	{
@@ -91,7 +92,7 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 
 		public void onApplicationInstanceCreate(IApplicationInstance appInstance)
 		{
-			if (ServerListenerBanStreams.debug)
+			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + appInstance.getName() + "] Stream Listener is initiated");
 			}
@@ -103,7 +104,7 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 
 		public void onApplicationInstanceDestroy(IApplicationInstance appInstance)
 		{
-			if (ServerListenerBanStreams.debug)
+			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceDestroy[" + appInstance.getName() + "] Stream listener is removed");
 			}
@@ -119,7 +120,7 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 		public void onMediaStreamCreate(IMediaStream stream)
 		{
 
-			if (ServerListenerBanStreams.debug)
+			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + stream.getName() + "] Stream is initiated ");
 			}
@@ -146,7 +147,7 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 		@Override
 		public void onPublish(IMediaStream stream, String streamName, boolean isRecord, boolean isAppend)
 		{
-			if (ServerListenerBanStreams.debug)
+			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + streamName + "] Checking stream for blacklist");
 			}
@@ -331,8 +332,8 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 		}
 	}
 
-	public static final String MODULE_NAME = "ServerListenerBanStream";
-	private static final String PROP_NAME_PREFIX = "banStream";
+	public static final String MODULE_NAME = "ServerListenerBlacklistStreams";
+	private static final String PROP_NAME_PREFIX = "blacklistStreams";
 
 	public static boolean debug = false;
 
@@ -352,7 +353,7 @@ public class ServerListenerBanStreams extends ModuleBase implements IServerNotif
 		if (logger.isDebugEnabled())
 			debug = true;
 
-		this.configPath = server.getProperties().getPropertyStr(ServerListenerBanStreams.PROP_NAME_PREFIX + "ConfigPath", this.configPath);
+		this.configPath = server.getProperties().getPropertyStr(ServerListenerBlacklistStreams.PROP_NAME_PREFIX + "ConfigPath", this.configPath);
 		if (!StringUtils.isEmpty(this.configPath))
 			BlackListUtils.setConfigPath(this.configPath);
 	}

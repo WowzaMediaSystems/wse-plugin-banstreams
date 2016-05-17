@@ -1,7 +1,8 @@
-/**
- * Wowza Streaming Engine Software and all components Copyright 2006 - 2015, Wowza Media Systems, LLC, licensed pursuant to the Wowza Media Software End User License Agreement.
+/*
+ * This code and all components (c) Copyright 2006 - 2016, Wowza Media Systems, LLC. All rights reserved.
+ * This code is licensed pursuant to the Wowza Public License version 1.0, available at www.wowza.com/legal.
  */
-package com.wowza.wms.plugin.wowzaban;
+package com.wowza.wms.plugin.blacklist;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,8 +47,8 @@ public class BlackListUtils
 	{
 		BlackListUtils.mergeData();
 		String streamKey = application + ":" + appInstance + ":" + streamName;
-		if (ServerListenerBanStreams.debug)
-			logger.info(ServerListenerBanStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Stream is initiated ");
+		if (ServerListenerBlacklistStreams.debug)
+			logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Stream is initiated ");
 
 		synchronized(BlackListUtils.streamBlackList)
 		{
@@ -58,16 +59,16 @@ public class BlackListUtils
 					BlackListUtils.saveFile();
 					BlackListUtils.printContents();
 
-					logger.info(ServerListenerBanStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Completed ");
+					logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Completed ");
 				}
 				else
 				{
-					logger.info(ServerListenerBanStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Does not exist-2 ");
+					logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Does not exist-2 ");
 				}
 			}
 			else
 			{
-				logger.info(ServerListenerBanStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Does not exist ");
+				logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Does not exist ");
 			}
 		}
 	}
@@ -131,7 +132,7 @@ public class BlackListUtils
 			}
 			catch (Exception e)
 			{
-				logger.error(ServerListenerBanStreams.MODULE_NAME + ".getStoredBlacklistItems() ", e);
+				logger.error(ServerListenerBlacklistStreams.MODULE_NAME + ".getStoredBlacklistItems() ", e);
 			}
 			finally
 			{
@@ -157,7 +158,7 @@ public class BlackListUtils
 		}
 		else
 		{
-			logger.info(ServerListenerBanStreams.MODULE_NAME + ".getStoredBlacklistItems could not find black list items list");
+			logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".getStoredBlacklistItems could not find black list items list");
 		}
 		return blackList;
 	}
@@ -181,7 +182,7 @@ public class BlackListUtils
 				StringBuilder b = new StringBuilder();
 				for (int i = 0; i < bli.size(); i++)
 				{
-					logger.info(ServerListenerBanStreams.MODULE_NAME + ".saveFile " + "Line: " + bli.get(i));
+					logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".saveFile " + "Line: " + bli.get(i));
 					b.append(bli.get(i) + "\n");
 				}
 				tmpFile.write(b.toString());
@@ -189,7 +190,7 @@ public class BlackListUtils
 			}
 			catch (IOException ioe)
 			{
-				logger.error(ServerListenerBanStreams.MODULE_NAME + ".saveFile " + "IOException: " + ioe.getMessage(), ioe);
+				logger.error(ServerListenerBlacklistStreams.MODULE_NAME + ".saveFile " + "IOException: " + ioe.getMessage(), ioe);
 			}
 		}
 	}
@@ -199,7 +200,7 @@ public class BlackListUtils
 		ArrayList<String> bli = BlackListUtils.getBlackListedStreams();
 		for (int i = 0; i < bli.size(); i++)
 		{
-			logger.info(ServerListenerBanStreams.MODULE_NAME + ".printContents " + "bli.get(i): " + bli.get(i));
+			logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".printContents " + "bli.get(i): " + bli.get(i));
 		}
 
 	}
