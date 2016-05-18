@@ -25,7 +25,7 @@ To blacklist a stream:
 
 4. Click the **Blacklist** link to add the published stream to the blacklist and stop the stream. Any subsequent attempts to publish to that app-name/app-instance/stream-name sequence will be rejected until you remove the stream off the blacklist.
 
-## API Reference
+## More resources
 
 [Wowza Streaming Engine Server-Side API Reference](https://www.wowza.com/resources/WowzaStreamingEngine_ServerSideAPI.pdf)
 
