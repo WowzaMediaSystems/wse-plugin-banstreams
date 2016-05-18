@@ -1,6 +1,6 @@
 # BlacklistStreams
 
-BlacklistStreams is a Server Listener and HTTP Provider for [Wowza Streaming Engine™ media server software](https://www.wowza.com/products/streaming-engine) that allows you the ability to persistently blacklist published streams.
+BlacklistStreams is a server listener and HTTP Provider for [Wowza Streaming Engine™ media server software](https://www.wowza.com/products/streaming-engine) that allows you to persistently blacklist published streams.
 
 ## Prerequisites
 
@@ -14,6 +14,16 @@ This module provides the following functionality:
 * Each stream name that is blacklisted will persist through each Wowza reboot.  
 * Allow previously blacklisted stream names to be whitelisted again.
 * Supports blacklisting both rtmp and rtsp publishers.
+
+To blacklist a stream:
+
+1. Start your Wowza Streaming Engine media server, and then open the following URL in your browser: <pre>http://[wowza-ip-address]:8086/blacklist</pre>
+
+2. When prompted, enter your user name and password. This is the same login credentials you use to login to Wowza Streaming Engine Manager.
+
+3. Publish your first stream, and then click **Check for new streams**. Your new stream should appear in the list with a **Blacklist** link to the right. 
+
+4. Click the **Blacklist** link to add the published stream to the blacklist and stop the stream. Any subsequent attempts to publish to that app-name/app-instance/stream-name sequence will be rejected until you remove the stream off the blacklist.
 
 ## API Reference
 
