@@ -10,10 +10,10 @@ Wowza Streaming Engine 4.0.0 or later is required.
 
 This module provides the following functionality:
 
-* Blacklist stream names using an HTTP Provider (point and select the stream to blacklist).
-* Each stream name that is blacklisted will persist through each Wowza reboot.  
-* Allow previously blacklisted stream names to be whitelisted again.
-* Supports blacklisting both rtmp and rtsp publishers.
+* Blacklist stream names using an HTTP Provider (allows selection of streams to blacklist).
+* Contents of blacklist persist through each Wowza Streaming Engine media server reboot.  
+* Allows previously blacklisted stream names to be whitelisted again.
+* Supports blacklisting of both RTMP and RTSP sources.
 
 To blacklist a stream:
 
