@@ -21,7 +21,8 @@ To blacklist a stream:
 
 2. When prompted, enter your user name and password. This is the same login credentials you use to login to Wowza Streaming Engine Manager.
 
-3. Publish your first stream, and then click **Check for new streams**. Your new stream should appear in the list with a **Blacklist** link to the right. 
+3. Publish your first stream, and then click **Check for new streams** in the **Stream Blacklists** page. Your new stream will appear in the list with a Blacklist link. 
+
 
 4. Click the **Blacklist** link to add the published stream to the blacklist and stop the stream. Any subsequent attempts to publish to that app-name/app-instance/stream-name sequence will be rejected until you remove the stream off the blacklist.
 
