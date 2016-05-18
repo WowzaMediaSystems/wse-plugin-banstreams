@@ -19,7 +19,7 @@ To blacklist a stream:
 
 1. Start your Wowza Streaming Engine media server, and then open the following URL in your browser: <pre>http://[wowza-ip-address]:8086/blacklist</pre>
 
-2. When prompted, enter your user name and password. This is the same login credentials you use to login to Wowza Streaming Engine Manager.
+2. When prompted, enter the login credentials that you use to access Wowza Streaming Engine Manager.
 
 3. Publish your first stream, and then click **Check for new streams** in the **Stream Blacklists** page. Your new stream will appear in the **Published Streams** list. 
 
