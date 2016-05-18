@@ -1,6 +1,6 @@
 # BlacklistStreams
 
-BlacklistStreams is a server listener and HTTP Provider for [Wowza Streaming Engine™ media server software](https://www.wowza.com/products/streaming-engine) that allows you to persistently blacklist published streams.
+The BlacklistStreams server listener and HTTP Provider [Wowza Streaming Engine™ media server software](https://www.wowza.com/products/streaming-engine) allows you to persistently blacklist published streams.
 
 ## Prerequisites
 
