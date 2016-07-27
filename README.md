@@ -36,3 +36,5 @@ To use the compiled version of this module, see [How to blacklist a stream in se
 
 ## License
 This code is distributed under the [Wowza Public License](https://github.com/WowzaMediaSystems/wse-plugin-blackliststreams/blob/master/LICENSE.txt).
+
+![alt tag](http://wowzalogs.com/stats/githubimage.php?plugin=wse-plugin-blackliststreams)
