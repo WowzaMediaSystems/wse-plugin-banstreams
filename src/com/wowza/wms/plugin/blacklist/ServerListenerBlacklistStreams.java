@@ -147,6 +147,9 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		@Override
 		public void onPublish(IMediaStream stream, String streamName, boolean isRecord, boolean isAppend)
 		{
+			// Should transcoded streams also be checked against the blacklist? If so, remove the next line
+		        if (stream.isTranscodeResult()) return;
+			
 			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + streamName + "] Checking stream for blacklist");
@@ -154,14 +157,16 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 
 			String application = "";
 			String appInstance = "";
-			if (stream.getClient() != null)
+			// Some optimization here, call stream.getClient() only once
+			IClient client = stream.getClient();
+			
+			if (client != null)
 			{
-				application = stream.getClient().getApplication().getName();
-				appInstance = stream.getClient().getAppInstance().getName();
+				application = client.getApplication().getName();
+				appInstance = client.getAppInstance().getName();
 
 				if (BlackListUtils.isStreamBlackListed(application, appInstance, streamName))
 				{
-					IClient client = stream.getClient();
 					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not white listed");
 					client.setShutdownClient(true);
 
@@ -171,6 +176,9 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			else
 			{
 				RTPStream rtp = stream.getRTPStream();
+				// Check if this is actually an RTP stream
+				if (rtp == null) return;
+				
 				application = rtp.getAppInstance().getApplication().getName();
 				appInstance = rtp.getAppInstance().getName();
 				if (BlackListUtils.isStreamBlackListed(application, appInstance, streamName))
