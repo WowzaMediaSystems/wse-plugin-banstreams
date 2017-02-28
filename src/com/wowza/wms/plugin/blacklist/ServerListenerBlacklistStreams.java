@@ -147,41 +147,43 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		@Override
 		public void onPublish(IMediaStream stream, String streamName, boolean isRecord, boolean isAppend)
 		{
+			IApplicationInstance appInstance = stream.getStreams().getAppInstance();
+			
+			// check if the stream being published has been generated locally. They can be controlled elsewhere.
+			// MediaCaster
+			if(appInstance.getMediaCasterStreams().getMediaCaster(streamName) != null)
+				return;
+			// transcoder output
+			if(stream.isTranscodeResult())
+				return;
+			// Publisher API
+			if(stream.isPublisherStream())
+				return;
+
 			if (ServerListenerBlacklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + streamName + "] Checking stream for blacklist");
 			}
-
-			String application = "";
-			String appInstance = "";
+			
+			String appName = appInstance.getApplication().getName();
+			String appInstName = appInstance.getName();
+			
+			if(!BlackListUtils.isStreamBlackListed(appName, appInstName, streamName))
+				return;
+			
 			if (stream.getClient() != null)
 			{
-				application = stream.getClient().getApplication().getName();
-				appInstance = stream.getClient().getAppInstance().getName();
-
-				if (BlackListUtils.isStreamBlackListed(application, appInstance, streamName))
-				{
-					IClient client = stream.getClient();
 					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not white listed");
-					client.setShutdownClient(true);
+					stream.getClient().setShutdownClient(true);
 
-					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] Client Rejected (NetStream.Publish.BadName), black listed " + application + "/" + appInstance + "/" + streamName);
-				}
+					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] Client Rejected (NetStream.Publish.BadName), black listed " + appName + "/" + appInstName + "/" + streamName);
 			}
-			else
+			else if(stream.getRTPStream() != null)
 			{
-				RTPStream rtp = stream.getRTPStream();
-				application = rtp.getAppInstance().getApplication().getName();
-				appInstance = rtp.getAppInstance().getName();
-				if (BlackListUtils.isStreamBlackListed(application, appInstance, streamName))
-				{
-					//stream.shutdown();
-					RTPRequestStatus status = new RTPRequestStatus();
-					status.setResponseCode(PLAYTRANSITION_RESET);
-					status.setResponseMessage("Banned");
-					rtp.shutdown(status);
-					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] RTP Rejected, black listed. Stream: " + application + "/" + appInstance + "/" + streamName);
-				}
+				RTPSession session = stream.getRTPStream().getSession();
+				if(session != null)
+				appInstance.getVHost().getRTPContext().shutdownRTPSession(session);
+					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] RTP Rejected, black listed. Stream: " + appName + "/" + appInstName + "/" + streamName);
 			}
 		}
 
