@@ -182,8 +182,10 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			{
 				RTPSession session = stream.getRTPStream().getSession();
 				if(session != null)
-				appInstance.getVHost().getRTPContext().shutdownRTPSession(session);
+				{
+					appInstance.getVHost().getRTPContext().shutdownRTPSession(session);
 					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] RTP Rejected, black listed. Stream: " + appName + "/" + appInstName + "/" + streamName);
+				}
 			}
 		}
 
