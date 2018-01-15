@@ -1,14 +1,16 @@
 /*
- * This code and all components (c) Copyright 2006 - 2016, Wowza Media Systems, LLC. All rights reserved.
+ * This code and all components (c) Copyright 2006 - 2018, Wowza Media Systems, LLC. All rights reserved.
  * This code is licensed pursuant to the Wowza Public License version 1.0, available at www.wowza.com/legal.
  */
 package com.wowza.wms.plugin.blacklist;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.wowza.wms.application.IApplication;
 import com.wowza.wms.application.IApplicationInstance;
@@ -18,7 +20,10 @@ import com.wowza.wms.http.IHTTPRequest;
 import com.wowza.wms.http.IHTTPResponse;
 import com.wowza.wms.httpstreamer.model.IHTTPStreamerSession;
 import com.wowza.wms.logging.WMSLogger;
-import com.wowza.wms.logging.WMSLoggerFactory; 
+import com.wowza.wms.logging.WMSLoggerFactory;
+import com.wowza.wms.mediacaster.MediaCasterItem;
+import com.wowza.wms.mediacaster.MediaCasterStreamId;
+import com.wowza.wms.mediacaster.wowza.LiveMediaStreamURL;
 import com.wowza.wms.rtp.model.RTPSession;
 import com.wowza.wms.rtp.model.RTPStream;
 import com.wowza.wms.stream.IMediaStream;
@@ -84,7 +89,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 			html += "<table>";
 			for (int i = 0; i < streams.size(); i++)
 			{
-				String[] parts = streams.get(i).split(":");
+				String[] parts = streams.get(i).split(BlackListUtils.separatorChar);
 				if (parts.length == 3)
 				{
 					String applicationName = parts[0];
@@ -126,6 +131,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 							String appInstanceName = iterAppInstances.next();
 							IApplicationInstance appInstance = application.getAppInstance(appInstanceName);
 
+							Set<String> names = new HashSet<String>();
 							List<String> publishedStreams = appInstance.getPublishStreamNames();
 							if (publishedStreams.size() > 0)
 							{
@@ -133,9 +139,22 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 								while (publishedStreamIterator.hasNext())
 								{
 									String streamName = publishedStreamIterator.next();
-									if(!BlackListUtils.isStreamBlackListed(applicationName, appInstanceName, streamName)){
-										html += this.addRow(applicationName, appInstanceName, streamName);
+									MediaCasterStreamId mediaCasterStreamId = MediaCasterItem.parseIdString(streamName);
+									streamName = mediaCasterStreamId.getName();
+									if (streamName.indexOf("://") >= 0)
+									{
+										String resolvedName = LiveMediaStreamURL.decodeURLToStreamName(streamName);
+										if (resolvedName != null)
+											streamName = resolvedName;
 									}
+									names.add(streamName);
+								}
+							}
+							for (String name : names)
+							{
+								if (!BlackListUtils.isStreamBlackListed(applicationName, appInstanceName, name))
+								{
+									html += this.addRow(applicationName, appInstanceName, name);
 								}
 							}
 						}
@@ -176,7 +195,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 						if (httpClient == null)
 							continue;
 
-						if (streamName.equals(httpClient.getStream().getName()))
+						if (streamName.equals(httpClient.getStreamName()))
 						{
 							httpClient.rejectSession();
 						}
@@ -208,7 +227,15 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 							{
 								IMediaStream stream = (IMediaStream)iter.next();
 
-								if (streamName.equals(stream.getName()))
+								String name = stream.getName();
+								if (name.indexOf("://") >= 0)
+								{
+									String resolvedName = LiveMediaStreamURL.decodeURLToStreamName(name);
+									if (resolvedName != null)
+										name = resolvedName;
+								}
+
+								if (streamName.equals(name))
 								{
 									rtmpClient.setShutdownClient(true);
 								}
@@ -246,7 +273,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 
 			//shutdown stream
 			IMediaStream publishedStream = appInstance.getStreams().getStream(streamName);
-			if(publishedStream != null)
+			if (publishedStream != null)
 			{
 				IClient client = publishedStream.getClient();
 				if (client != null)
@@ -323,21 +350,23 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 
 	private String getMsgHeader(String msg, IHTTPRequest req)
 	{
-		if(!msg.isEmpty()){
+		if (!msg.isEmpty())
+		{
 			String requestURL = req.getRequestURL();
 			String[] parts = requestURL.split("\\/");
-			String filterName = parts[parts.length-1];
-			msg += " <a href='/"+filterName+"'>clear</a>";
+			String filterName = parts[parts.length - 1];
+			msg += " <a href='/" + filterName + "'>clear</a>";
 		}
 		return "<div style='clear:both; background-color: #FFFFCC; border: 1px solid #ccc;padding: 10px 10px 10px 10px'>" + msg + "</div>";
 	}
 
 	private String getHtmlPage(String body, String msg)
 	{
-		return "<html>\n" + "<head>\n" + "<title>Blacklist Streams</title>\n" + "<script type='text/javascript'>\n" + "function formSubmit(blacklist, application, appInstance, stream)\n" + "{\n" + " document.forms[0].blacklist.value = blacklist;\n" + "				  document.forms[0].application.value = application;\n"
-				+ "				  document.forms[0].appInstance.value = appInstance;\n" + "				  document.forms[0].stream.value = stream;\n" + "				  document.forms[0].submit();\n" + "				}\n" + "				</script>\n" + "			</head>\n"
-				+ "			<body style='font-family: verdana;'>\n<h2 style='margin-left: 50px;'>Stream Blacklists</h2>" + "				<div style='margin-left: 50px'>" + "				" + msg + "				" + body + " " + "				<form name='blacklistform' method='post'> " + "					<input type='hidden' name='blacklist' value='' /> \n"
-				+ "					<input type='hidden' name='application' value='' /> " + "					<input type='hidden' name='appInstance' value='' /> " + "					<input type='hidden' name='stream' value='' /> " + "				</form> " + "				</div>" + "			</body>" + "</html>";
+		return "<html>\n" + "<head>\n" + "<title>Blacklist Streams</title>\n" + "<script type='text/javascript'>\n" + "function formSubmit(blacklist, application, appInstance, stream)\n" + "{\n" + " document.forms[0].blacklist.value = blacklist;\n"
+				+ "				  document.forms[0].application.value = application;\n" + "				  document.forms[0].appInstance.value = appInstance;\n" + "				  document.forms[0].stream.value = stream;\n" + "				  document.forms[0].submit();\n" + "				}\n"
+				+ "				</script>\n" + "			</head>\n" + "			<body style='font-family: verdana;'>\n<h2 style='margin-left: 50px;'>Stream Blacklists</h2>" + "				<div style='margin-left: 50px'>" + "				" + msg + "				" + body + " "
+				+ "				<form name='blacklistform' method='post'> " + "					<input type='hidden' name='blacklist' value='' /> \n" + "					<input type='hidden' name='application' value='' /> "
+				+ "					<input type='hidden' name='appInstance' value='' /> " + "					<input type='hidden' name='stream' value='' /> " + "				</form> " + "				</div>" + "			</body>" + "</html>";
 	}
 
 	private String startSection(String vhost)
@@ -367,7 +396,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 			blacklist = "0";
 		}
 		return "<tr  onmouseover=\"this.bgColor='#FFFFCC'\" onmouseout=\"this.bgColor='#EEE'\" >" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appName + "</td>" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appInstance + "</td>"
-				+ "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + streamName + "</td>" + "	<td><a style='padding: 10px 10px 10px 10px; cursor:pointer; color: blue;' onclick=\"formSubmit('" + blacklist + "','" + appName + "','" + appInstance + "','" + streamName + "');\">" + blacklistedTitle
-				+ "</a> </td>" + "</tr>";
+				+ "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + streamName + "</td>" + "	<td><a style='padding: 10px 10px 10px 10px; cursor:pointer; color: blue;' onclick=\"formSubmit('" + blacklist + "','" + appName + "','" + appInstance + "','" + streamName + "');\">"
+				+ blacklistedTitle + "</a> </td>" + "</tr>";
 	}
 }
