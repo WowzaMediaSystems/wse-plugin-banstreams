@@ -360,6 +360,9 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		this.configPath = server.getProperties().getPropertyStr(ServerListenerBlacklistStreams.PROP_NAME_PREFIX + "ConfigPath", this.configPath);
 		if (!StringUtils.isEmpty(this.configPath))
 			BlackListUtils.setConfigPath(this.configPath);
+		String separatorChar = server.getProperties().getPropertyStr(ServerListenerBlacklistStreams.PROP_NAME_PREFIX + "SeparatorChar");
+		if (!StringUtils.isEmpty(separatorChar))
+			BlackListUtils.setSeparatorChar(separatorChar);
 	}
 
 	@Override

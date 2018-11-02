@@ -20,11 +20,17 @@ public class BlackListUtils
 {
 	private static ArrayList<String> streamBlackList = new ArrayList<String>();
 	private static String blacklistConfigPath = Bootstrap.getServerHome(Bootstrap.CONFIGHOME) + "/conf/blacklist.txt";
+	static String separatorChar = ":";
 	private static WMSLogger logger = WMSLoggerFactory.getLogger(BlackListUtils.class);
 
 	public static void setConfigPath(String config)
 	{
 		BlackListUtils.blacklistConfigPath = config;
+	}
+
+	public static void setSeparatorChar(String separatorChar)
+	{
+		BlackListUtils.separatorChar = separatorChar;
 	}
 
 	public static void blackListStream(String application, String appInstance, String streamName)
@@ -33,7 +39,7 @@ public class BlackListUtils
 
 		synchronized(BlackListUtils.streamBlackList)
 		{
-			String streamKey = application + ":" + appInstance + ":" + streamName;
+			String streamKey = application + separatorChar + appInstance + separatorChar + streamName;
 			if (!BlackListUtils.streamBlackList.contains(streamKey))
 			{
 				BlackListUtils.streamBlackList.add(streamKey);
@@ -46,7 +52,7 @@ public class BlackListUtils
 	public static void removeStreamFromList(String application, String appInstance, String streamName)
 	{
 		BlackListUtils.mergeData();
-		String streamKey = application + ":" + appInstance + ":" + streamName;
+		String streamKey = application + separatorChar + appInstance + separatorChar + streamName;
 		if (ServerListenerBlacklistStreams.debug)
 			logger.info(ServerListenerBlacklistStreams.MODULE_NAME + ".removeStreamFromList[" + streamKey + "] Stream is initiated ");
 
@@ -76,7 +82,7 @@ public class BlackListUtils
 	public static boolean isStreamBlackListed(String application, String appInstance, String streamName)
 	{
 		BlackListUtils.mergeData();
-		String streamKey = application + ":" + appInstance + ":" + streamName;
+		String streamKey = application + separatorChar + appInstance + separatorChar + streamName;
 		return BlackListUtils.streamBlackList.contains(streamKey);
 	}
 
@@ -167,18 +173,16 @@ public class BlackListUtils
 	{
 		synchronized(BlackListUtils.streamBlackList)
 		{
-			String blackListTargetPath = Bootstrap.getServerHome(Bootstrap.CONFIGHOME) + "/conf/blacklist.txt";
-
 			ArrayList<String> bli = BlackListUtils.streamBlackList;
 			try
 			{
-				File f = new File(blackListTargetPath);
+				File f = new File(blacklistConfigPath);
 				if (!f.exists())
 				{
 					f.createNewFile();
 				}
 
-				FileWriter tmpFile = new FileWriter(blackListTargetPath, false);
+				FileWriter tmpFile = new FileWriter(blacklistConfigPath, false);
 				StringBuilder b = new StringBuilder();
 				for (int i = 0; i < bli.size(); i++)
 				{
