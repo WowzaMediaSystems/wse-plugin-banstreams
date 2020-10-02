@@ -2,7 +2,7 @@
  * This code and all components (c) Copyright 2006 - 2018, Wowza Media Systems, LLC. All rights reserved.
  * This code is licensed pursuant to the Wowza Public License version 1.0, available at www.wowza.com/legal.
  */
-package com.wowza.wms.plugin.blacklist;
+package com.wowza.wms.plugin.blocklist;
 
 import com.wowza.util.StringUtils;
 import com.wowza.wms.amf.AMFDataList;
@@ -36,7 +36,7 @@ import com.wowza.wms.vhost.IVHost;
 import com.wowza.wms.vhost.IVHostNotify;
 import com.wowza.wms.vhost.VHostSingleton;
 
-public class ServerListenerBlacklistStreams extends ModuleBase implements IServerNotify2
+public class ServerListenerBlocklistStreams extends ModuleBase implements IServerNotify2
 { 
 	private class VHostNotifier implements IVHostNotify
 	{
@@ -92,7 +92,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 
 		public void onApplicationInstanceCreate(IApplicationInstance appInstance)
 		{
-			if (ServerListenerBlacklistStreams.debug)
+			if (ServerListenerBlocklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + appInstance.getName() + "] Stream Listener is initiated");
 			}
@@ -104,7 +104,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 
 		public void onApplicationInstanceDestroy(IApplicationInstance appInstance)
 		{
-			if (ServerListenerBlacklistStreams.debug)
+			if (ServerListenerBlocklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceDestroy[" + appInstance.getName() + "] Stream listener is removed");
 			}
@@ -120,7 +120,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		public void onMediaStreamCreate(IMediaStream stream)
 		{
 
-			if (ServerListenerBlacklistStreams.debug)
+			if (ServerListenerBlocklistStreams.debug)
 			{
 				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + stream.getName() + "] Stream is initiated ");
 			}
@@ -142,7 +142,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 
 		/*
 		 * (non-Javadoc)
-		 * This will handle the publish event and determine if stream is blacklisted.
+		 * This will handle the publish event and determine if stream is blocklisted.
 		 */
 		@Override
 		public void onPublish(IMediaStream stream, String streamName, boolean isRecord, boolean isAppend)
@@ -160,23 +160,23 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			if(stream.isPublisherStream())
 				return;
 
-			if (ServerListenerBlacklistStreams.debug)
+			if (ServerListenerBlocklistStreams.debug)
 			{
-				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + streamName + "] Checking stream for blacklist");
+				logger.info(MODULE_NAME + ".onApplicationInstanceCreate[" + streamName + "] Checking stream for blocklist");
 			}
 			
 			String appName = appInstance.getApplication().getName();
 			String appInstName = appInstance.getName();
 			
-			if(!BlackListUtils.isStreamBlackListed(appName, appInstName, streamName))
+			if(!BlockListUtils.isStreamblockListed(appName, appInstName, streamName))
 				return;
 			
 			if (stream.getClient() != null)
 			{
-					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not white listed");
+					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not allow listed");
 					stream.getClient().setShutdownClient(true);
 
-					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] Client Rejected (NetStream.Publish.BadName), black listed " + appName + "/" + appInstName + "/" + streamName);
+					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] Client Rejected (NetStream.Publish.BadName), block listed " + appName + "/" + appInstName + "/" + streamName);
 			}
 			else if(stream.getRTPStream() != null)
 			{
@@ -184,7 +184,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 				if(session != null)
 				{
 					appInstance.getVHost().getRTPContext().shutdownRTPSession(session);
-					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] RTP Rejected, black listed. Stream: " + appName + "/" + appInstName + "/" + streamName);
+					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] RTP Rejected, block listed. Stream: " + appName + "/" + appInstName + "/" + streamName);
 				}
 			}
 		}
@@ -238,7 +238,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		@Override
 		public String resolvePlayAlias(IApplicationInstance appInstance, String name)
 		{
-			if (BlackListUtils.isStreamBlackListed(appInstance.getApplication().getName(), appInstance.getName(), name))
+			if (BlockListUtils.isStreamblockListed(appInstance.getApplication().getName(), appInstance.getName(), name))
 				return null;
 			return name;
 		}
@@ -256,7 +256,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			if (name == null)
 				return null;
 
-			if (BlackListUtils.isStreamBlackListed(appInstance.getApplication().getName(), appInstance.getName(), name))
+			if (BlockListUtils.isStreamblockListed(appInstance.getApplication().getName(), appInstance.getName(), name))
 				return null;
 			return name;
 		}
@@ -274,7 +274,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			if (name == null)
 				return null;
 
-			if (BlackListUtils.isStreamBlackListed(appInstance.getApplication().getName(), appInstance.getName(), name))
+			if (BlockListUtils.isStreamblockListed(appInstance.getApplication().getName(), appInstance.getName(), name))
 				return null;
 			return name;
 		}
@@ -292,7 +292,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			if (name == null)
 				return null;
 
-			if (BlackListUtils.isStreamBlackListed(appInstance.getApplication().getName(), appInstance.getName(), name))
+			if (BlockListUtils.isStreamblockListed(appInstance.getApplication().getName(), appInstance.getName(), name))
 				return null;
 			return name;
 		}
@@ -310,7 +310,7 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 			if (name == null)
 				return null;
 
-			if (BlackListUtils.isStreamBlackListed(appInstance.getApplication().getName(), appInstance.getName(), name))
+			if (BlockListUtils.isStreamblockListed(appInstance.getApplication().getName(), appInstance.getName(), name))
 				return null;
 			return name;
 		}
@@ -336,8 +336,8 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		}
 	}
 
-	public static final String MODULE_NAME = "ServerListenerBlacklistStreams";
-	private static final String PROP_NAME_PREFIX = "blacklistStreams";
+	public static final String MODULE_NAME = "ServerListenerblocklistStreams";
+	private static final String PROP_NAME_PREFIX = "blocklistStreams";
 
 	public static boolean debug = false;
 
@@ -357,12 +357,12 @@ public class ServerListenerBlacklistStreams extends ModuleBase implements IServe
 		if (logger.isDebugEnabled())
 			debug = true;
 
-		this.configPath = server.getProperties().getPropertyStr(ServerListenerBlacklistStreams.PROP_NAME_PREFIX + "ConfigPath", this.configPath);
+		this.configPath = server.getProperties().getPropertyStr(ServerListenerBlocklistStreams.PROP_NAME_PREFIX + "ConfigPath", this.configPath);
 		if (!StringUtils.isEmpty(this.configPath))
-			BlackListUtils.setConfigPath(this.configPath);
-		String separatorChar = server.getProperties().getPropertyStr(ServerListenerBlacklistStreams.PROP_NAME_PREFIX + "SeparatorChar");
+			BlockListUtils.setConfigPath(this.configPath);
+		String separatorChar = server.getProperties().getPropertyStr(ServerListenerBlocklistStreams.PROP_NAME_PREFIX + "SeparatorChar");
 		if (!StringUtils.isEmpty(separatorChar))
-			BlackListUtils.setSeparatorChar(separatorChar);
+			BlockListUtils.setSeparatorChar(separatorChar);
 	}
 
 	@Override

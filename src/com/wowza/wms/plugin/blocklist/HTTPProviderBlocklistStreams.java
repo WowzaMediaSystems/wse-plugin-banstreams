@@ -2,7 +2,7 @@
  * This code and all components (c) Copyright 2006 - 2018, Wowza Media Systems, LLC. All rights reserved.
  * This code is licensed pursuant to the Wowza Public License version 1.0, available at www.wowza.com/legal.
  */
-package com.wowza.wms.plugin.blacklist;
+package com.wowza.wms.plugin.blocklist;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -29,9 +29,9 @@ import com.wowza.wms.rtp.model.RTPStream;
 import com.wowza.wms.stream.IMediaStream;
 import com.wowza.wms.vhost.IVHost;
 
-public class HTTPProviderBlacklistStreams extends HTTProvider2Base
+public class HTTPProviderBlocklistStreams extends HTTProvider2Base
 {
-	public static final String MODULE_NAME = "HTTPProviderBlacklistStreams";
+	public static final String MODULE_NAME = "HTTPProviderblocklistStreams";
 
 	private WMSLogger logger = WMSLoggerFactory.getLogger(getClass());
 
@@ -44,8 +44,8 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 
 		String html = "";
 
-		// get blacklisted streams
-		html += this.getBlackListedStreams();
+		// get blocklisted streams
+		html += this.getblockListedStreams();
 
 		// get published streams
 		html += this.getPublishedStreams(vhost);
@@ -78,18 +78,18 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 		return html;
 	}
 
-	private String getBlackListedStreams()
+	private String getblockListedStreams()
 	{
 		String html = "";
-		ArrayList<String> streams = BlackListUtils.getBlackListedStreams();
+		ArrayList<String> streams = BlockListUtils.getblockListedStreams();
 		if (streams.size() > 0)
 		{
 
-			html += this.divHeader("Blacklisted") + this.divSectionStart();
+			html += this.divHeader("blocklisted") + this.divSectionStart();
 			html += "<table>";
 			for (int i = 0; i < streams.size(); i++)
 			{
-				String[] parts = streams.get(i).split(BlackListUtils.separatorChar);
+				String[] parts = streams.get(i).split(BlockListUtils.separatorChar);
 				if (parts.length == 3)
 				{
 					String applicationName = parts[0];
@@ -152,7 +152,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 							}
 							for (String name : names)
 							{
-								if (!BlackListUtils.isStreamBlackListed(applicationName, appInstanceName, name))
+								if (!BlockListUtils.isStreamblockListed(applicationName, appInstanceName, name))
 								{
 									html += this.addRow(applicationName, appInstanceName, name);
 								}
@@ -171,7 +171,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 		return html;
 	}
 
-	private boolean blacklistStream(IVHost vhost, String applicationName, String appInstanceName, String streamName)
+	private boolean blocklistStream(IVHost vhost, String applicationName, String appInstanceName, String streamName)
 	{
 		try
 		{
@@ -202,7 +202,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 					}
 					catch (Exception e)
 					{
-						logger.error(MODULE_NAME + ".blacklistStream()", e);
+						logger.error(MODULE_NAME + ".blocklistStream()", e);
 					}
 
 				}
@@ -244,7 +244,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 					}
 					catch (Exception e)
 					{
-						logger.error(MODULE_NAME + ".blacklistStream()", e);
+						logger.error(MODULE_NAME + ".blocklistStream()", e);
 					}
 				}
 
@@ -266,7 +266,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 					}
 					catch (Exception e)
 					{
-						logger.error(MODULE_NAME + ".blacklistStream()", e);
+						logger.error(MODULE_NAME + ".blocklistStream()", e);
 					}
 				}
 			}
@@ -293,7 +293,7 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 		}
 		catch (Exception ex)
 		{
-			logger.error(MODULE_NAME + ".blacklistStream()", ex);
+			logger.error(MODULE_NAME + ".blocklistStream()", ex);
 		}
 		return false;
 	}
@@ -307,23 +307,23 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 
 		Map<String, List<String>> params = req.getParameterMap();
 		System.out.println(params.toString());
-		if (params.containsKey("blacklist"))
+		if (params.containsKey("blocklist"))
 		{
 			String appPath = params.get("application").get(0) + "/" + params.get("appInstance").get(0) + "/" + params.get("stream").get(0);
-			if (params.get("blacklist").get(0).equalsIgnoreCase("1"))
+			if (params.get("blocklist").get(0).equalsIgnoreCase("1"))
 			{
-				BlackListUtils.blackListStream(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
-				if (this.blacklistStream(vhost, params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0)))
+				BlockListUtils.blockListStream(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
+				if (this.blocklistStream(vhost, params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0)))
 				{
-//					BlackListed.removeStreamFromList(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
-					return appPath + " has been added to the blacklist";
+//					blockListed.removeStreamFromList(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
+					return appPath + " has been added to the blocklist";
 				}
-				return appPath + " failed to add to blacklist.";
+				return appPath + " failed to add to blocklist.";
 			}
 			else
 			{
-				BlackListUtils.removeStreamFromList(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
-				return appPath + " has been removed from the blacklist";
+				BlockListUtils.removeStreamFromList(params.get("application").get(0), params.get("appInstance").get(0), params.get("stream").get(0));
+				return appPath + " has been removed from the blocklist";
 			}
 		}
 		return null;
@@ -362,10 +362,10 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 
 	private String getHtmlPage(String body, String msg)
 	{
-		return "<html>\n" + "<head>\n" + "<title>Blacklist Streams</title>\n" + "<script type='text/javascript'>\n" + "function formSubmit(blacklist, application, appInstance, stream)\n" + "{\n" + " document.forms[0].blacklist.value = blacklist;\n"
+		return "<html>\n" + "<head>\n" + "<title>blocklist Streams</title>\n" + "<script type='text/javascript'>\n" + "function formSubmit(blocklist, application, appInstance, stream)\n" + "{\n" + " document.forms[0].blocklist.value = blocklist;\n"
 				+ "				  document.forms[0].application.value = application;\n" + "				  document.forms[0].appInstance.value = appInstance;\n" + "				  document.forms[0].stream.value = stream;\n" + "				  document.forms[0].submit();\n" + "				}\n"
-				+ "				</script>\n" + "			</head>\n" + "			<body style='font-family: verdana;'>\n<h2 style='margin-left: 50px;'>Stream Blacklists</h2>" + "				<div style='margin-left: 50px'>" + "				" + msg + "				" + body + " "
-				+ "				<form name='blacklistform' method='post'> " + "					<input type='hidden' name='blacklist' value='' /> \n" + "					<input type='hidden' name='application' value='' /> "
+				+ "				</script>\n" + "			</head>\n" + "			<body style='font-family: verdana;'>\n<h2 style='margin-left: 50px;'>Stream blocklists</h2>" + "				<div style='margin-left: 50px'>" + "				" + msg + "				" + body + " "
+				+ "				<form name='blocklistform' method='post'> " + "					<input type='hidden' name='blocklist' value='' /> \n" + "					<input type='hidden' name='application' value='' /> "
 				+ "					<input type='hidden' name='appInstance' value='' /> " + "					<input type='hidden' name='stream' value='' /> " + "				</form> " + "				</div>" + "			</body>" + "</html>";
 	}
 
@@ -388,15 +388,15 @@ public class HTTPProviderBlacklistStreams extends HTTProvider2Base
 	private String addRow(String appName, String appInstance, String streamName)
 	{
 
-		String blacklist = "1";
-		String blacklistedTitle = "Blacklist";
-		if (BlackListUtils.isStreamBlackListed(appName, appInstance, streamName))
+		String blocklist = "1";
+		String blocklistedTitle = "blocklist";
+		if (BlockListUtils.isStreamblockListed(appName, appInstance, streamName))
 		{
-			blacklistedTitle = "Whitelist";
-			blacklist = "0";
+			blocklistedTitle = "allowlist";
+			blocklist = "0";
 		}
 		return "<tr  onmouseover=\"this.bgColor='#FFFFCC'\" onmouseout=\"this.bgColor='#EEE'\" >" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appName + "</td>" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appInstance + "</td>"
-				+ "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + streamName + "</td>" + "	<td><a style='padding: 10px 10px 10px 10px; cursor:pointer; color: blue;' onclick=\"formSubmit('" + blacklist + "','" + appName + "','" + appInstance + "','" + streamName + "');\">"
-				+ blacklistedTitle + "</a> </td>" + "</tr>";
+				+ "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + streamName + "</td>" + "	<td><a style='padding: 10px 10px 10px 10px; cursor:pointer; color: blue;' onclick=\"formSubmit('" + blocklist + "','" + appName + "','" + appInstance + "','" + streamName + "');\">"
+				+ blocklistedTitle + "</a> </td>" + "</tr>";
 	}
 }
