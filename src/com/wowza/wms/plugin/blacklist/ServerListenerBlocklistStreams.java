@@ -173,7 +173,7 @@ public class ServerListenerBlocklistStreams extends ModuleBase implements IServe
 			
 			if (stream.getClient() != null)
 			{
-					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not white listed");
+					sendStreamOnStatusError(stream, "NetStream.Publish.BadName", "The publisher's Stream was not allow listed");
 					stream.getClient().setShutdownClient(true);
 
 					logger.info(MODULE_NAME + ".onPublish[" + streamName + "] Client Rejected (NetStream.Publish.BadName), block listed " + appName + "/" + appInstName + "/" + streamName);
