@@ -16,7 +16,7 @@ Wowza Streaming Engine 4.0.0 or later is required.
 
 To blocklist a stream:
 
-1. Start your Wowza Streaming Engine media server, and then open the following URL to the Stream Blocklists page in a web browser: <pre>http://[wowza-ip-address]:8086/blacklist</pre>
+1. Start your Wowza Streaming Engine media server, and then open the following URL to the Stream Blocklists page in a web browser: <pre>http://[wowza-ip-address]:8086/blocklist</pre>
 
 2. When prompted, enter the credentials that you use to sign in to Wowza Streaming Engine Manager.
 
@@ -31,10 +31,10 @@ To use the compiled version of this module, see [Blacklist a stream in session w
 
 [How to extend Wowza Streaming Engine using the Wowza IDE](https://www.wowza.com/docs/how-to-extend-wowza-streaming-engine-using-the-wowza-ide)
 
-Wowza Media Systems™ provides developers with a platform to create streaming applications and solutions. See [Wowza Developer Tools](https://www.wowza.com/resources/developers) to learn more about our APIs and SDK.
+Wowza Media Systems™ provides developers with a platform to create streaming applications and solutions. See [Wowza Developer Tools](https://www.wowza.com/developer) to learn more about our APIs and SDK.
 
 ## Contact
 [Wowza Media Systems, LLC](https://www.wowza.com/contact)
 
 ## License
-This code is distributed under the [Wowza Public License](https://github.com/WowzaMediaSystems/wse-plugin-blackliststreams/blob/master/LICENSE.txt).
+This code is distributed under the [Wowza Public License](/LICENSE.txt).

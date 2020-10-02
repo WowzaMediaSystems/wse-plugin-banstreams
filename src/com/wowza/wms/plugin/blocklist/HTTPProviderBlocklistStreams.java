@@ -392,7 +392,7 @@ public class HTTPProviderBlocklistStreams extends HTTProvider2Base
 		String blocklistedTitle = "blocklist";
 		if (BlockListUtils.isStreamblockListed(appName, appInstance, streamName))
 		{
-			blocklistedTitle = "Whitelist";
+			blocklistedTitle = "allowlist";
 			blocklist = "0";
 		}
 		return "<tr  onmouseover=\"this.bgColor='#FFFFCC'\" onmouseout=\"this.bgColor='#EEE'\" >" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appName + "</td>" + "	<td style='width: 120px;padding: 10px 10px 10px 10px;'>" + appInstance + "</td>"
