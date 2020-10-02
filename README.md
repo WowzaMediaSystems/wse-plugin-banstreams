@@ -16,7 +16,7 @@ Wowza Streaming Engine 4.0.0 or later is required.
 
 To blocklist a stream:
 
-1. Start your Wowza Streaming Engine media server, and then open the following URL to the Stream Blocklists page in a web browser: <pre>http://[wowza-ip-address]:8086/blacklist</pre>
+1. Start your Wowza Streaming Engine media server, and then open the following URL to the Stream Blocklists page in a web browser: <pre>http://[wowza-ip-address]:8086/blocklist</pre>
 
 2. When prompted, enter the credentials that you use to sign in to Wowza Streaming Engine Manager.
 
